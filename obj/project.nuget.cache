@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "/0fn1Bn55lE=",
+  "success": true,
+  "projectFilePath": "C:\\Anthony\\Job\\task3\\task3.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\antho\\.nuget\\packages\\consoletables\\2.6.2\\consoletables.2.6.2.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\wcwidth\\1.0.0\\wcwidth.1.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
