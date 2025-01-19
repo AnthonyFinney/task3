@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-
 namespace T3;
 
 public class Task3 {
