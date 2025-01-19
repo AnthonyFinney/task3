@@ -25,7 +25,7 @@ public class Task3 {
 
             PrintTheGame(null, DiceGameEnum.Selection);
 
-            userInput = GetUserInput(DiceGameEnum.Selection, 0);
+            userInput = GetUserInput(DiceGameEnum.Selection, dice);
             if (userInput == -1) {
                 break;
             }
@@ -66,7 +66,7 @@ public class Task3 {
             PrintTheGame(null, DiceGameEnum.Main);
             Console.Write("Your selection: ");
 
-            userInput = GetUserInput(DiceGameEnum.Main, 0);
+            userInput = GetUserInput(DiceGameEnum.Main, dice);
             if (userInput == -1) {
                 break;
             }
@@ -90,7 +90,7 @@ public class Task3 {
             PrintTheGame(null, DiceGameEnum.Main);
             Console.Write("Your selection: ");
 
-            userInput = GetUserInput(DiceGameEnum.Main, 0);
+            userInput = GetUserInput(DiceGameEnum.Main, dice);
             if (userInput == -1) {
                 break;
             }
@@ -111,7 +111,7 @@ public class Task3 {
         }
     }
 
-    private int GetUserInput(DiceGameEnum diceGameEnum, int diceCount) {
+    private int GetUserInput(DiceGameEnum diceGameEnum, List<int[]> dice) {
         string userInput;
         int checkInt = 0;
 
@@ -119,15 +119,17 @@ public class Task3 {
             checkInt = 1;
         } else if (diceGameEnum == DiceGameEnum.Main) {
             checkInt = 5;
-        } else if (diceGameEnum == DiceGameEnum.Dice) {
-            checkInt = diceCount - 1;
+        } else if (diceGameEnum == DiceGameEnum.Dice && dice != null) {
+            checkInt = dice.Count - 1;
         }
 
         while (true) {
             Console.Write("Your selection: ");
-            userInput = Console.ReadLine()!;
-            if (userInput == "?") {
-                PrintTable();
+            userInput = Console.ReadLine()?.Trim()!;
+            if (userInput == "?" && dice != null) {
+                PrintTable(dice);
+            } else if (userInput == "?" && dice == null) {
+                Console.WriteLine("No dice data is available.");
             } else if (userInput == "X") {
                 return -1;
             } else if (int.TryParse(userInput, out int input) && input >= 0 && input <= checkInt) {
@@ -137,21 +139,54 @@ public class Task3 {
         }
     }
 
-    private void PrintTable() {
-        var table = new ConsoleTable(" User dice v ", " 2,2,4,4,9,9 ", " 1,1,6,6,8,8 ", " 3,3,5,5,7,7 ");
-        table.AddRow(" 2,2,4,4,9,9 ", " - (0.3333)  ", " 0.5556 ", " 0.4444 ")
-            .AddRow(" 1,1,6,6,8,8 ", " 0.4444 ", " - (0.3333) ", " 0.5556 ")
-            .AddRow(" 3,3,5,5,7,7 ", " 0.5556 ", " 0.4444 ", " - (0.3333) ");
+    private void PrintTable(List<int[]> dice) {
+        // var table = new ConsoleTable(" 2,2,4,4,9,9 ", " 1,1,6,6,8,8 ", " 3,3,5,5,7,7 ");
+        // table.AddRow(" 2,2,4,4,9,9 ", " - (0.3333)  ", " 0.5556 ", " 0.4444 ")
+        //     .AddRow(" 1,1,6,6,8,8 ", " 0.4444 ", " - (0.3333) ", " 0.5556 ")
+        //     .AddRow(" 3,3,5,5,7,7 ", " 0.5556 ", " 0.4444 ", " - (0.3333) ");
+
+        // table.Write();
+        // Console.WriteLine();
+
+        var header = new List<string> { "Dice" };
+        for (int i = 0; i < dice.Count; i++) {
+            header.Add($"Dice {i + 1}");
+        }
+
+        var table = new ConsoleTable(header.ToArray());
+        for (int i = 0; i < dice.Count; i++) {
+            var row = new List<string> { string.Join(", ", dice[i]) };
+            for (int j = 0; j < dice.Count; j++) {
+                if (i == j) {
+                    row.Add("- (1.000)");
+                } else {
+                    double prob = GetWinProbability(dice[i], dice[j]);
+                    row.Add($"{prob}");
+                }
+            }
+            table.AddRow(row.ToArray());
+        }
 
         table.Write();
         Console.WriteLine();
     }
 
+    private int CountWins(int[] a, int[] b) {
+        return a.Select(x => ~Array.BinarySearch(b, x, Comparer<int>.Create((x, y) => Math.Sign(x - y + 0.5)))).Sum();
+    }
+
+    private double GetWinProbability(int[] die1, int[] die2) {
+        int wins = CountWins(die1, die2);
+        int totalComparison = die1.Length * die2.Length;
+        return (double)wins / totalComparison;
+    }
+
+
     private int GetUserDie(List<int[]> dice) {
         Console.WriteLine("Select Die: ");
         PrintTheGame(dice);
 
-        return GetUserInput(DiceGameEnum.Dice, dice.Count);
+        return GetUserInput(DiceGameEnum.Dice, dice);
     }
 
     private int GetPcDie(List<int[]> dice, int userChoice) {
