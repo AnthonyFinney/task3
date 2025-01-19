@@ -6,15 +6,14 @@ public class Task3 {
             throw new ArgumentException("Number of dice have to be 3 or more");
         }
 
-        int userInput, userChoice, pcChoice, resultPc, resultUser;
-        List<int[]> dice = DiceManager.MakeDice(arrayDice);
-        int pc = CryptoHelper.GenerateSecureRandomBit(0, 1);
-        byte[] key = CryptoHelper.Generate256BitKey();
-        string hmac = CryptoHelper.ComputeHMAC(pc, key);
-        int[] userDic, pcDic;
-
-
         while (true) {
+            int userInput, userChoice, pcChoice, resultPc, resultUser;
+            List<int[]> dice = DiceManager.MakeDice(arrayDice);
+            int pc = CryptoHelper.GenerateSecureRandomBit(0, 1);
+            byte[] key = CryptoHelper.Generate256BitKey();
+            string hmac = CryptoHelper.ComputeHMAC(pc, key);
+            int[] userDic, pcDic;
+
             Console.WriteLine("Let's determine who makes the first move.");
             Console.WriteLine("I selected a random value in the range 0..1");
             Console.WriteLine($"(HMAC:{hmac})");
